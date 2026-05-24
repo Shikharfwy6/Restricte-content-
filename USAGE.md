@@ -94,6 +94,19 @@ docker compose logs -f
 /bdl https://t.me/c/123456789/3 https://t.me/c/123456789/2598
 ```
 
+**Single story:**
+```
+/dls https://t.me/username/s/12
+```
+
+**Batch story range:**
+```
+/bdls https://t.me/username/s/10 https://t.me/username/s/25
+```
+
+> 📌 Stories are only visible for 24 hours unless pinned. The user session
+> must be able to view the story (follow the user / be in the channel).
+
 **Stop current work:**
 ```
 /killall
