@@ -322,7 +322,7 @@ async def handle_download(bot: Client, message: Message, post_url: str):
             await message.reply(f"**❌ Invalid URL format:** `{e}`")
         except Exception as e:
             LOGGER(__name__).error(f"Unexpected error for {post_url}: {e}")
-            await message.reply(f"**❌ Unexpected error:** `{e}`")
+            await message.reply("**❌ An unexpected error occurred.** Check /logs for details.")
 
 
 async def handle_story_download(bot: Client, message: Message, story_url: str):
@@ -472,7 +472,7 @@ async def handle_story_download(bot: Client, message: Message, story_url: str):
             await message.reply(f"**❌ Invalid story URL:** `{e}`")
         except Exception as e:
             LOGGER(__name__).error(f"Unexpected error for story {story_url}: {e}")
-            await message.reply(f"**❌ Unexpected error:** `{e}`")
+            await message.reply("**❌ An unexpected error occurred.** Check /logs for details.")
 
 
 @bot.on_message(filters.command("dl") & filters.private)

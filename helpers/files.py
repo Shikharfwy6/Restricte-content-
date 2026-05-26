@@ -10,9 +10,17 @@ from logger import LOGGER
 SIZE_UNITS = ["B", "KB", "MB", "GB", "TB", "PB"]
 
 def get_download_path(folder_id: int, filename: str, root_dir: str = "downloads") -> str:
+    safe_name = os.path.basename(filename)
+    if not safe_name:
+        safe_name = str(folder_id)
     folder = os.path.join(root_dir, str(folder_id))
     os.makedirs(folder, exist_ok=True)
-    return os.path.join(folder, filename)
+    full_path = os.path.realpath(os.path.join(folder, safe_name))
+    real_root = os.path.realpath(folder)
+    if not full_path.startswith(real_root + os.sep) and full_path != real_root:
+        safe_name = str(folder_id)
+        full_path = os.path.join(folder, safe_name)
+    return full_path
 
 
 def cleanup_download(path: str) -> None:
