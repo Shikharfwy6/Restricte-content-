@@ -42,6 +42,16 @@ from helpers.msg import (
 from config import PyroConf
 from logger import LOGGER
 
+
+def owner_only(func):
+    """Decorator that restricts command access to OWNER_ID users."""
+    async def wrapper(client, message: Message):
+        if PyroConf.OWNER_ID and message.from_user.id not in PyroConf.OWNER_ID:
+            await message.reply("⛔ **Access Denied.** You are not authorized to use this bot.")
+            return
+        return await func(client, message)
+    return wrapper
+
 # Initialize the bot client
 bot = Client(
     "media_bot",
@@ -77,6 +87,7 @@ def track_task(coro):
 
 
 @bot.on_message(filters.command("start") & filters.private)
+@owner_only
 async def start(_, message: Message):
     welcome_text = (
         "👋 **Welcome to Media Downloader Bot!**\n\n"
@@ -96,6 +107,7 @@ async def start(_, message: Message):
 
 
 @bot.on_message(filters.command("help") & filters.private)
+@owner_only
 async def help_command(_, message: Message):
     help_text = (
         "💡 **Media Downloader Bot Help**\n\n"
@@ -130,6 +142,7 @@ async def help_command(_, message: Message):
 
 
 @bot.on_message(filters.command("cleanup") & filters.private)
+@owner_only
 async def cleanup_storage(_, message: Message):
     try:
         files_removed, bytes_freed = cleanup_downloads_root()
@@ -322,7 +335,7 @@ async def handle_download(bot: Client, message: Message, post_url: str):
             await message.reply(f"**❌ Invalid URL format:** `{e}`")
         except Exception as e:
             LOGGER(__name__).error(f"Unexpected error for {post_url}: {e}")
-            await message.reply(f"**❌ Unexpected error:** `{e}`")
+            await message.reply("**❌ An unexpected error occurred.** Check /logs for details.")
 
 
 async def handle_story_download(bot: Client, message: Message, story_url: str):
@@ -472,10 +485,11 @@ async def handle_story_download(bot: Client, message: Message, story_url: str):
             await message.reply(f"**❌ Invalid story URL:** `{e}`")
         except Exception as e:
             LOGGER(__name__).error(f"Unexpected error for story {story_url}: {e}")
-            await message.reply(f"**❌ Unexpected error:** `{e}`")
+            await message.reply("**❌ An unexpected error occurred.** Check /logs for details.")
 
 
 @bot.on_message(filters.command("dl") & filters.private)
+@owner_only
 async def download_media(bot: Client, message: Message):
     if len(message.command) < 2:
         await message.reply("**Provide a post URL after the /dl command.**")
@@ -486,6 +500,7 @@ async def download_media(bot: Client, message: Message):
 
 
 @bot.on_message(filters.command("dls") & filters.private)
+@owner_only
 async def download_story(bot: Client, message: Message):
     if len(message.command) < 2:
         await message.reply(
@@ -506,6 +521,7 @@ async def download_story(bot: Client, message: Message):
 
 
 @bot.on_message(filters.command("bdls") & filters.private)
+@owner_only
 async def download_story_range(bot: Client, message: Message):
     args = message.text.split()
 
@@ -582,6 +598,7 @@ async def download_story_range(bot: Client, message: Message):
 
 
 @bot.on_message(filters.command("bdl") & filters.private)
+@owner_only
 async def download_range(bot: Client, message: Message):
     args = message.text.split()
 
@@ -681,6 +698,7 @@ async def download_range(bot: Client, message: Message):
 
 
 @bot.on_message(filters.private & ~filters.command(["start", "help", "dl", "bdl", "dls", "bdls", "stats", "logs", "killall", "cleanup"]))
+@owner_only
 async def handle_any_message(bot: Client, message: Message):
     if message.text and not message.text.startswith("/"):
         text = message.text.strip()
@@ -691,6 +709,7 @@ async def handle_any_message(bot: Client, message: Message):
 
 
 @bot.on_message(filters.command("stats") & filters.private)
+@owner_only
 async def stats(_, message: Message):
     currentTime = get_readable_time(time() - PyroConf.BOT_START_TIME)
     total, used, free = shutil.disk_usage(".")
@@ -721,6 +740,7 @@ async def stats(_, message: Message):
 
 
 @bot.on_message(filters.command("logs") & filters.private)
+@owner_only
 async def logs(_, message: Message):
     if os.path.exists("logs.txt"):
         await message.reply_document(document="logs.txt", caption="**Logs**")
@@ -729,6 +749,7 @@ async def logs(_, message: Message):
 
 
 @bot.on_message(filters.command("killall") & filters.private)
+@owner_only
 async def cancel_all_tasks(_, message: Message):
     cancelled = 0
     for task in list(RUNNING_TASKS):

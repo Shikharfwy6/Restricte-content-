@@ -42,6 +42,7 @@ Before you begin, ensure you have met the following requirements:
    - **`SESSION_STRING`**: The session string generated using [@TgDevToolBot](https://t.me/TgDevToolBot).
    - **`BOT_TOKEN`**: The token you obtained from [@BotFather](https://t.me/BotFather).
    - **`FORWARD_CHAT_ID`**: Optional. Set a target channel/group chat ID (example: `-1001234567890`) to automatically copy downloaded content there. Leave empty to disable.
+   - **`OWNER_ID`**: **Recommended.** Comma-separated list of Telegram user IDs allowed to use the bot (example: `123456789,987654321`). If left empty, the bot will be accessible to everyone.
 
 3. Optional performance settings (add to `config.py`):
    - **`MAX_CONCURRENT_DOWNLOADS`**: Number of simultaneous downloads (default: 3)
